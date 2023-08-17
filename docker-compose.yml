@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+# MogoDb Services
+  mongo_db:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_db:/data/db
+# API Services
+  api:
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./server
+    container_name: api
+    restart: always
+    ports:
+      - 5173:5173
+      - 5000:5000
+    environment:
+      PORT: 3001
+      MONGO_URI: mongodb://mongo_db:27017
+      DB_NAME: my_db
+      NAME: ClaphamApi
+    depends_on:
+      - mongo_db
+
+volumes:
+  mongo_db:

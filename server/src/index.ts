@@ -1,7 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 dotenv.config()
-import { initDb } from './src/initDB';
+import { initDb } from './initDB';
 initDb();
 const app: Application = express();
 
