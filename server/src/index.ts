@@ -7,8 +7,13 @@ const app: Application = express();
 
 const PORT: number = 5000;
 
-app.use('/', (req: Request, res: Response): void => {
+app.get('/', (req: Request, res: Response): void => {
     res.json({message: 'Hello world!', env_name: process.env.NAME, other: 'other'});
+});
+
+
+app.get('/test', (req: Request, res: Response): void => {
+    res.json({message: 'Hello test!', env_name: process.env.NAME, other: 'more stuff'});
 });
 
 app.listen(PORT, (): void => {
