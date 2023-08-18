@@ -13,13 +13,16 @@ services:
 # API Services
   api:
     build: 
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       context: ./server
     container_name: api
     restart: always
     ports:
-      - 5173:5173
+      # - 5173:5173
       - 5000:5000
+    volumes:
+      - ./server:/app/
+      - /app/node_modules  
     environment:
       PORT: 5000
       MONGO_URI: mongodb://mongo_db:27017
@@ -30,12 +33,12 @@ services:
 # Client Services
   client:
     build: 
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       context: ./client
     container_name: client
     restart: always
     ports:
-      - 3000:3000
+      - 5173:5173
     environment:
       REACT_APP_API_URL: http://localhost:5173
     depends_on:
