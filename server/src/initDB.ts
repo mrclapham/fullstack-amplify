@@ -1,19 +1,16 @@
 import mongoose from 'mongoose';
 
-const ATLAS_URL: string = "mongodb+srv://claphamgraham:b4S6APRXbrunn8Xz@democluster.qk2fzlj.mongodb.net/?retryWrites=true&w=majority"
-
-//     .connect(process.env.MONGODB_URI || "", {
-
-
 export const initDb = () => {
   console.log("process.env.MONGODB_URI ===  ", process.env )
 
+/*
+The following come form the docker-compose.yml file (either dev or prod)
+      process.env.MONGO_URI 
+      dbName: process.env.DB_NAME,
+      user: process.env.DB_USER,
+      pass: process.env.DB_PASS
+*/
 
-  console.log( process.env.DB_NAME)
-  console.log( process.env.DB_USER)
-  console.log( process.env.DB_PASS)
-
-  console.log("process.env.MONGO_INITDB_DATABASE ===  ", process.env.MONGO_INITDB_DATABASE )
   mongoose
     .connect(process.env.MONGO_URI  || "", {
       dbName: process.env.DB_NAME,

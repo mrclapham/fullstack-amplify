@@ -28,8 +28,7 @@ app.get('/shipwrecks', async (req: Request, res: Response): Promise<any> => {
 });
 
 app.get("/products", async (req: Request, res: Response): Promise<any> => {
-    const results = await getAllProducts(req, res, null);
-    res.send(results);
+    const results = await getAllProducts(res);
 });
 
 app.post('/add', (req: Request, res: Response): void => {
