@@ -1,16 +1,17 @@
 import express, { Application, Request, Response } from 'express';
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import cors from 'cors';
+import { getAllShipwrecks  } from './Controllers/Shipwrecks.Controller';
+import { getAllProducts } from './Controllers/Products.Controller';
 
-dotenv.config()
+// dotenv.config();
+
 import { initDb } from './initDB';
 initDb();
 const app: Application = express();
 app.use(cors());
 
 const PORT: number = 5000;
-
-const DATABASE_URL: string = process.env.DATABASE_URL || 'mongodb://localhost:27017/test';
 
 app.get('/', (req: Request, res: Response): void => {
     res.json({message: 'Hello world!', env_name: process.env.NAME, other: 'other'});
@@ -19,6 +20,16 @@ app.get('/', (req: Request, res: Response): void => {
 
 app.get('/test', (req: Request, res: Response): void => {
     res.json({message: 'Hello test!', env_name: process.env.NAME, other: 'more stuff 123 xxx'});
+})
+
+app.get('/shipwrecks', async (req: Request, res: Response): Promise<any> => {
+    const results = await getAllShipwrecks(req, res, null);
+    res.send(results);
+});
+
+app.get("/products", async (req: Request, res: Response): Promise<any> => {
+    const results = await getAllProducts(req, res, null);
+    res.send(results);
 });
 
 app.post('/add', (req: Request, res: Response): void => {

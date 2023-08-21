@@ -5,18 +5,22 @@ services:
   mongo_db:
     image: mongo:latest
     container_name: mongo
-    restart: always
+    restart: unless-stopped
     ports:
       - 27017:27017
     volumes:
       - mongo_db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: testbase
 # API Services
   api:
     build: 
       dockerfile: Dockerfile.dev
       context: ./server
     container_name: api
-    restart: always
+    restart: unless-stopped
     ports:
       # - 5173:5173
       - 5000:5000
@@ -27,6 +31,8 @@ services:
       PORT: 5000
       MONGO_URI: mongodb://mongo_db:27017
       DB_NAME: testbase
+      DB_USER: root
+      DB_PASS: root
       NAME: DemoApi
     depends_on:
       - mongo_db
