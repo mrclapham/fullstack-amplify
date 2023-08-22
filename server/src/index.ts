@@ -1,10 +1,17 @@
 import express, { Application, Request, Response } from 'express';
-// import dotenv from 'dotenv';
 import cors from 'cors';
 import { getAllShipwrecks  } from './Controllers/Shipwrecks.Controller';
-import { getAllProducts } from './Controllers/Products.Controller';
+import { getAllProducts, addProduct, Product } from './Controllers/Products.Controller';
 
-// dotenv.config();
+const apiVersion = '/v1';
+
+// "pagination": {
+//     "total_records": 100,
+//     "current_page": 1,
+//     "total_pages": 10,
+//     "next_page": 2,
+//     "prev_page": null
+//   }
 
 import { initDb } from './initDB';
 initDb();
@@ -18,21 +25,25 @@ app.get('/', (req: Request, res: Response): void => {
 });
 
 
-app.get('/test', (req: Request, res: Response): void => {
+app.get(`${apiVersion}/test`, (req: Request, res: Response): void => {
     res.json({message: 'Hello test!', env_name: process.env.NAME, other: 'more stuff 123 xxx'});
 })
 
-app.get('/shipwrecks', async (req: Request, res: Response): Promise<any> => {
+app.get('/shipwrecks', async (req: Request, res: Response): Promise<void> => {
     const results = await getAllShipwrecks(req, res, null);
     res.send(results);
 });
 
-app.get("/products", async (req: Request, res: Response): Promise<any> => {
+app.get(`${apiVersion}/products`, async (req: Request, res: Response): Promise<void> => {
     const results = await getAllProducts(res);
 });
 
-app.post('/add', (req: Request, res: Response): void => {
-
+app.post('products/add', (req: Request, res: Response): void => {
+    const newProd:Product = {
+        name: 'test',
+        price: 123
+    } as Product;
+    addProduct(req, res, newProd);
 });
 
 app.listen(PORT, (): void => {
