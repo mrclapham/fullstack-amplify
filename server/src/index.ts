@@ -25,9 +25,22 @@ app.get('/', (req: Request, res: Response): void => {
 });
 
 
-app.get(`${apiVersion}/test`, (req: Request, res: Response): void => {
+app.get(`${apiVersion}/vtest`, (req: Request, res: Response): void => {
     res.json({message: 'Hello test!', env_name: process.env.NAME, other: 'more stuff 123 xxx'});
 })
+
+app.get(`/vtest`, async (req: Request, res: Response): Promise<void> => {
+    res.send( ["a","b","c"])
+});
+
+app.get(`${apiVersion}/shipwrecks`, async (req: Request, res: Response): Promise<void> => {
+    res.send( ["a","b","c"])
+});
+
+
+app.get(`${apiVersion}/shipwrecks`, async (req: Request, res: Response): Promise<void> => {
+    res.send( ["a","b","c"])
+});
 
 app.get('/shipwrecks', async (req: Request, res: Response): Promise<void> => {
     const results = await getAllShipwrecks(req, res, null);
@@ -38,7 +51,8 @@ app.get(`${apiVersion}/products`, async (req: Request, res: Response): Promise<v
     const results = await getAllProducts(res);
 });
 
-app.post('products/add', (req: Request, res: Response): void => {
+app.post(`${apiVersion}/add_product`, (req: Request, res: Response): void => {
+    console.log('req.body: ', req.body);
     const newProd:Product = {
         name: 'test',
         price: 123
