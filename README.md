@@ -20,6 +20,15 @@ To run in production mode or release to production will require the following:
 - **Mongo Atlas** account (a cloud based MongoDB SAS platform with a free tier) [https://www.mongodb.com/atlas](https://www.mongodb.com/atlas)
 - **Amazon Web Services (AWS)** account [https://aws.amazon.com/?nc2=h_lg](https://aws.amazon.com/?nc2=h_lg)
 
+### Database initialisation
+run:
+```
+$ yarn dev:build
+```
+Open the MongoDB Compass application, from the Connect menu 
+
+### GitHub Secrets
+
 The following 'Secrets' will require adding to the GitHub repo:
 
     DOCKER_USERNAME
@@ -88,7 +97,7 @@ This builds
 **Create EC2 IAM Role**
 <ol>
 <li>Go to AWS Management Console</li>
-<li>Search for **IAM** and click the IAM Service.</li>
+<li>Search for <strong>IAM</strong> and click the IAM Service.</li>
 <li>Click **Roles** under **Access Management** in the left sidebar.</li>
 <li>Click the **Create role** button.</li>
 <li>Select **AWS Service** under **Trusted entity type**. Then select **EC2** under **common use cases**.</li>
