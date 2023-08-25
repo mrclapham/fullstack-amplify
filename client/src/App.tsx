@@ -8,6 +8,8 @@ import { Demo } from "./components/Demo/Demo";
 function App() {    
   
   const [products, setProducts] = useState<Product[]>([])
+  const [productName, setProductName] = useState<string>('');
+  const [productPrice, setProductPrice] = useState<number>(0);
 
   useEffect(() => {
 
@@ -22,16 +24,17 @@ function App() {
 
         <button className={'adder'} 
         onClick={async ()=> {
-          addProduct({name: 'test', price: 123}).then(res => {
+          addProduct({name: productName, price: productPrice}).then(res => {
             console.log(res);
+            getAllProducts().then(res => {
+            setProducts(res);
+          })
+            
           });
           // getAllProducts().then(res => {
           //   setProducts(res);
           // })
-        } }>Add Product</button>
-
-
-
+        } }>Add Product: {productName}: {productPrice}</button>
 
         {products.map(({name, price, id}) => {
           return (
@@ -46,8 +49,9 @@ function App() {
       </div>
       <form action=''>
         <label htmlFor="name">Name:</label>
-        <input type="text" id="name" name="name" />
+        <input type="text" id="name" name="name" onChange={(e)=> setProductName(e.target.value)}/>
         <label htmlFor="price">Price</label>
+        <input type="number" id="price" name="price" onChange={(e)=> setProductPrice(parseFloat(e.target.value))} />
       </form>
     </div>
   )

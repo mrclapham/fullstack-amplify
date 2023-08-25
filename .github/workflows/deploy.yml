@@ -29,3 +29,30 @@ jobs:
               password: ${{ secrets.DOCKER_PASSWORD }}
           - run: docker build -t mrclapham/fullstack-amplify-client -f client/Dockerfile.dev ./client
           - run: docker run -e CI=true mrclapham/fullstack-amplify-client npm test
+
+          - run: docker build -t mrclapham/multi-client-10-14 ./client
+          - run: docker build -t mrclapham/multi-nginx-10-14 ./nginx
+          - run: docker build -t mrclapham/multi-server-10-14 ./server
+          - run: docker build -t mrclapham/multi-worker-10-14 ./worker
+     
+          - run: docker push mrclapham/multi-client-10-14
+          - run: docker push mrclapham/multi-nginx-10-14
+          - run: docker push mrclapham/multi-server-10-14
+          - run: docker push mrclapham/multi-worker-10-14
+     
+          - name: Generate deployment package
+            run: zip -r deploy.zip . -x '*.git*'
+    #  comment out or delete this if NOT deploying to AWS –           
+    #  replace 'docker-react-bench' with your application name 
+          - name: Deploy to EB
+            uses: einaregilsson/beanstalk-deploy@v18
+            with:
+              aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+              aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+              application_name: docker-react-bench
+              environment_name: Docker-react-bench-env
+              existing_bucket_name: elasticbeanstalk-us-east-1-318746526342
+              region: us-east-1
+              version_label: ${{ github.sha }}
+              deployment_package: deploy.zip
+          
