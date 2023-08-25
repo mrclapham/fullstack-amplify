@@ -48,7 +48,7 @@ function App() {
         <Demo />
       </div>
       <form action=''>
-        <label htmlFor="name">Name:</label>
+        <label htmlFor="name">Name:::</label>
         <input type="text" id="name" name="name" onChange={(e)=> setProductName(e.target.value)}/>
         <label htmlFor="price">Price</label>
         <input type="number" id="price" name="price" onChange={(e)=> setProductPrice(parseFloat(e.target.value))} />
