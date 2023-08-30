@@ -5,7 +5,7 @@
 This is an accelerator fro a MERN (Mongo, Express, React, Node) Stack.
 It may be run in development or production mode. It is written entirely in TypeScript and is a bare bones implementation. It does include Vittest for testing both client-side and server-side code.
 
-It allows an full stack application to be rapidly developed with an database, API and UI.
+It allows a full stack application to be rapidly developed with an database, API and UI.
 
 With a bit more setup the application may be deployed to AWS Elastic Beanstalk via a GitHub Actions pipeline – see guides below.
 
@@ -15,17 +15,12 @@ Minimum requirements:
 - **DockerHub** account (free tier available): [https://hub.docker.com/](https://hub.docker.com/)
 - **Node** [https://nodejs.org/en/download](https://nodejs.org/en/download) or for more control over which version of Node to run, **Node Version Manager(nvm)** for Windows: [https://github.com/coreybutler/nvm-windows](https://github.com/coreybutler/nvm-windows) or for Mac (using Homebrew): [https://formulae.brew.sh/formula/nvm](https://formulae.brew.sh/formula/nvm)
 - **The Docker Desktop App** [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+- **Mongodb Compass** A GUI for editing local and remote Mongodb databases [https://www.mongodb.com/try/download/compass](https://www.mongodb.com/try/download/compass). This will be needed to add the initial database 'testbase' to the containerised Mongodb instance.
 
 To run in production mode or release to production will require the following:
 - **Mongo Atlas** account (a cloud based MongoDB SAS platform with a free tier) [https://www.mongodb.com/atlas](https://www.mongodb.com/atlas)
 - **Amazon Web Services (AWS)** account [https://aws.amazon.com/?nc2=h_lg](https://aws.amazon.com/?nc2=h_lg)
 
-### Database initialisation
-run:
-```
-$ yarn dev:build
-```
-Open the MongoDB Compass application, from the Connect menu 
 
 ### GitHub Secrets
 
@@ -42,12 +37,48 @@ Details of how to obtain the correct values are described below in the relevant 
 
 To add the Secrets, in the project’s Git repository, go to Settings -> Secrets and variables -> actions. Click the 'New repository secret' button and add the key value pairs. Make a record of them as, once set, they are no longer accessible and don't save the record in the repository. They are safe to use in public repositories as they cannot be accessed once set.
 
-### Setup: Development
-Install Mongo Compass
+## Development mode
+
+### Setup Development
+Install [Mongo Compass](https://www.mongodb.com/products/compass) and add a new database called 'testbase' with a collection called 'products'. The app will add items withe the following shape:
+
+```
+{
+  "name": "test",
+  "price": 22
+}
+```
+
+### Database initialisation – development
+run:
+```
+$ yarn dev:build
+```
+Open the MongoDB Compass application, from the Connect menu choose ‘New window’ to open the connection in a new window and click the ‘New connection’ button. 
+
+In the URI field type: ```mongodb://localhost:27017 ```. 
+
+Drop down the ‘Advanced Connection Options’ menu, select ‘Authentication’ and choose ‘Authentication Method -> Username/Password’. Username and password are both 'root'. This is set in the ```docker-compose.dev.yml``` file and may be changed here, if you wish: 
+
+```yaml
+services:
+# MogoDb Services
+# -- lines ommited for brevity --
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+```
+In the Compass window, from the side menu click the **+** icon (see below).
+```
+{} My Queries
+🗄️  Databases  🔄 +
+```
+Call the database **‘testbase’** and the collection **‘products’**. 
+
+Click on the ‘Create database‘ button.
 
 
-
-### Development mode
+### Run Development
 run:
 ```bash
 $ yarn dev:up 
@@ -63,12 +94,38 @@ There is a local version of Mongo which runs in a Docker container and has a Doc
 
 This should run with no additional setup as database, api and front-end are all self contained.
 
-It is recommended that MongoDB Compass is installed [https://www.mongodb.com/try/download/compass](https://www.mongodb.com/try/download/compass). It is an App which allows Mongodb to be edited via a GUI.
-
-![Alt text](readme_images/DockerComposeDiagram_dev.png)
+This builds the following:
 
 
-### Production mode
+![Development diagram](readme_images/DockerComposeDiagram_dev.png)
+
+
+## Production mode
+
+running ```prod:up:build``` will create a local build which accesses the production cloud database and allows for testing with real data. NB anyone accessing the Mongodb Atlas database will need to be added to the whitelisted IP addresses under ‘Security -> Database Access’
+### Database initialisation – production
+If you do not already have an account with [MongoDb](https://cloud.mongodb.com/) set one up – free tiers are available.
+
+Go to the ‘MongoDB Atlas’ portal and create a new project, name it anything you wish.
+
+Click the ‘CONNECT’ button and under ‘Connect to your application’ click ‘Drivers’, choose ‘Node.js 5.5 or later’ and under ‘3. Add your connection string into your application code’ copy the connection string. Add this to the file ‘docker-compose.yml’ 
+```yaml
+# API Services
+  api:
+    build: 
+   # ommited for brevity
+
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb+srv://connection-string-just-copied
+      # ommited for brevity
+
+```
+In the left menu, select ‘Database’ and click the ‘Browse Collections’ button.
+
+Choose ‘Add my own data’ and create a database called 'testbase' and a collection called 'products' – the naming is to match the requirements of the boilerplate code. 
+
+
 ```bash
 $ yarn prod:up 
 ```
@@ -76,7 +133,7 @@ or, to rebuild the containers
 ```bash
 $ yarn prod:up: build 
 ```
-This builds 
+This builds the following (NB: This is a local build, allowing a local dry-run before pushing to production.):
 
 
 ![Alt text](readme_images/DockerComposeDiagram_prod.png)
@@ -267,47 +324,8 @@ deployment\_package:deploy.zip
 
 ![Shape2](RackMultipart20230825-1-y6mgf_html_cb55ddb5edd60516.gif)
 
-FOR PRODUCTION
+## FOR PRODUCTION
 
-## Create a Redis cluster
-
-Go to ElastiCache -\> Redis cluster
-
-DON'T USE THE DEFAULT cache.r4.large instance type
-
-Use "Easy create", Configuration "Demo" (cache.t4g.micro, 0.5 GiB memory)
-
-Now create a common security group
-
-Go to the Virtual Private Cloud (VPC) dashboard and choose Security -\> Security groups, you should now see "launch-wizard" or "launch-wizard-1". Don't use this.
-
- Create a new Security Group, we'll call it multi-docker. Once created select it and go to the 'Inbound rules" tab and add a new Inbound rule.
-
-Type: Custom TCP,
-
-Protocol: TCP,
-
-Post range: 5432 - 6399
-
-Source: the security group just created above ('multi-docker').
-
-Assign the security group to our:
-
-- Elastic Beanstalk instance
-- RDS (Postgres) instance
-- EC (Redis) instance
-
-**EC Security Group**
-
-Go to ElastiCache → Redis clusters, select the previously created Redis cluster, in this case 'multi-docker-demo-test', select its radio button and select 'Manage'. From the Selected security group panel and add the multi-docker security group.
-
-**RDS Security Group**
-
-Go to RDS → Databases, select the previously created database, in this case 'multi-docker-rds'.
-
-Select the 'Modify' button at the head of the page.
- Go to the Connectivity panel and choose the 'multi-docker' Security Group from the Security Group dropdown.
- Click Continue and them Modify DB Instance.
 
 **Elastic BeanStalk Security Group**
 
